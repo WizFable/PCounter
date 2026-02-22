@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title-tag">タイトル</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --plus-btn: #ff4757;
+            --minus-btn: #2e86de;
+            --text-color: #2f3542;
+            --accent-color: #747d8c;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 15px;
+            color: var(--text-color);
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .memo-container {
+            margin-bottom: 20px;
+        }
+        #memo-area {
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+            resize: none;
+            display: block;
+        }
+
+        .counter-row {
+            background: var(--card-bg);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 70px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active { transform: scale(0.95); opacity: 0.9; }
+        .btn-minus { background-color: var(--minus-btn); }
+        .btn-plus { background-color: var(--plus-btn); }
+
+        .count-display {
+            min-width: 60px;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+        }
+
+        .settings-area {
+            margin-top: 40px;
+            padding: 20px 10px;
+            border-top: 2px dashed #ccc;
+            background: #eee;
+            border-radius: 10px;
+        }
+
+        .settings-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+            color: #666;
+        }
+
+        .setting-group {
+            margin-bottom: 10px;
+        }
+
+        .setting-group label {
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="main-title">タイトル</h1>
+
+    <div class="memo-container">
+        <textarea id="memo-area" rows="5" placeholder="ここにメモを入力（自動保存されます）"></textarea>
+    </div>
+
+    <div id="counters">
+        <div class="counter-row">
+            <span class="label" id="label-p1">項目1</span>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="updateCount('p1', -1)">ー</button>
+                <div id="p1-display" class="count-display">0</div>
+                <button class="btn btn-plus" onclick="updateCount('p1', 1)">＋</button>
+            </div>
+        </div>
+
+        <div class="counter-row">
+            <span class="label" id="label-p2">項目2</span>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="updateCount('p2', -1)">ー</button>
+                <div id="p2-display" class="count-display">0</div>
+                <button class="btn btn-plus" onclick="updateCount('p2', 1)">＋</button>
+            </div>
+        </div>
+
+        <div class="counter-row">
+            <span class="label" id="label-p3">項目3</span>
+            <div class="controls">
+                <button class="btn btn-minus" onclick="updateCount('p3', -1)">ー</button>
+                <div id="p3-display" class="count-display">0</div>
+                <button class="btn btn-plus" onclick="updateCount('p3', 1)">＋</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-area">
+        <span class="settings-title">⚙ システム設定</span>
+        
+        <div class="setting-group">
+            <label>全体のタイトル</label>
+            <input type="text" id="input-title" class="setting-input" oninput="saveSettings()" placeholder="タイトルを入力">
+        </div>
+        <div class="setting-group">
+            <label>項目名1 (上)</label>
+            <input type="text" id="input-label-p1" class="setting-input" oninput="saveSettings()" placeholder="項目名を入力">
+        </div>
+        <div class="setting-group">
+            <label>項目名2 (中)</label>
+            <input type="text" id="input-label-p2" class="setting-input" oninput="saveSettings()" placeholder="項目名を入力">
+        </div>
+        <div class="setting-group)
+            <label>項目名3 (下)</label>
+            <input type="text" id="input-label-p3" class="setting-input" oninput="saveSettings()" placeholder="項目名を入力">
+        </div>
+
+        <button class="reset-btn" onclick="resetCountsOnly()">カウンターの数値のみリセット</button>
+    </div>
+
+    <script>
+        const ids = ['p1', 'p2', 'p3'];
+        const memoArea = document.getElementById('memo-area');
+
+        // デフォルト値の定義
+        const DEFAULTS = {
+            title: "タイトル",
+            p1: "項目1",
+            p2: "項目2",
+            p3: "項目3"
+        };
+
+        window.onload = () => {
+            // カウント読み込み
+            ids.forEach(id => {
+                const saved = localStorage.getItem(id) || 0;
+                document.getElementById(`${id}-display`).innerText = saved;
+            });
+            // メモ読み込み
+            memoArea.value = localStorage.getItem('memo-text') || "";
+
+            // 設定の読み込み
+            loadSettings();
+        };
+
+        function updateCount(id, delta) {
+            const display = document.getElementById(`${id}-display`);
+            let current = parseInt(display.innerText);
+            current = current + delta;
+            display.innerText = current;
+            localStorage.setItem(id, current);
+        }
+
+        memoArea.addEventListener('input', () => {
+            localStorage.setItem('memo-text', memoArea.value);
+        });
+
+        function saveSettings() {
+            const titleVal = document.getElementById('input-title').value || DEFAULTS.title;
+            const p1Val = document.getElementById('input-label-p1').value || DEFAULTS.p1;
+            const p2Val = document.getElementById('input-label-p2').value || DEFAULTS.p2;
+            const p3Val = document.getElementById('input-label-p3').value || DEFAULTS.p3;
+
+            document.getElementById('main-title').innerText = titleVal;
+            document.getElementById('page-title-tag').innerText = titleVal;
+            document.getElementById('label-p1').innerText = p1Val;
+            document.getElementById('label-p2').innerText = p2Val;
+            document.getElementById('label-p3').innerText = p3Val;
+
+            const settings = {
+                title: titleVal,
+                p1: p1Val,
+                p2: p2Val,
+                p3: p3Val
+            };
+            localStorage.setItem('parking-settings-v2', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('parking-settings-v2');
+            if (saved) {
+                const s = JSON.parse(saved);
+                document.getElementById('input-title').value = s.title;
+                document.getElementById('input-label-p1').value = s.p1;
+                document.getElementById('input-label-p2').value = s.p2;
+                document.getElementById('input-label-p3').value = s.p3;
+                saveSettings();
+            } else {
+                document.getElementById('input-title').value = DEFAULTS.title;
+                document.getElementById('input-label-p1').value = DEFAULTS.p1;
+                document.getElementById('input-label-p2').value = DEFAULTS.p2;
+                document.getElementById('input-label-p3').value = DEFAULTS.p3;
+                saveSettings();
+            }
+        }
+
+        function resetCountsOnly() {
+            if(confirm('カウンターの数値をすべて0に戻しますか？')) {
+                ids.forEach(id => {
+                    localStorage.setItem(id, 0);
+                    document.getElementById(`${id}-display`).innerText = 0;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
