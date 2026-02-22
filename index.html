@@ -93,7 +93,7 @@
             border-top: 2px dashed #ccc;
             background: #eee;
             border-radius: 10px;
-            margin-bottom: 50px; /* スクロール余裕分 */
+            margin-bottom: 50px;
         }
 
         .settings-title {
@@ -140,7 +140,7 @@
     <h1 id="main-title">タイトル</h1>
 
     <div class="memo-container">
-        <textarea id="memo-area" rows="5" placeholder="ここにメモを入力（自動保存されます）"></textarea>
+        <textarea id="memo-area" rows="5" placeholder="ここにメモを入力"></textarea>
     </div>
 
     <div id="counters">
@@ -197,6 +197,90 @@
 
     <script>
         const ids = ['p1', 'p2', 'p3'];
-        const memoArea = document.getElementById('memo-area');
-
+        
+        // 初回起動時の完全なデフォルト
         const DEFAULTS = {
+            title: "タイトル",
+            p1: "項目1",
+            p2: "項目2",
+            p3: "項目3"
+        };
+
+        window.onload = () => {
+            // 1. カウントの復元
+            ids.forEach(id => {
+                const saved = localStorage.getItem(id) || 0;
+                document.getElementById(`${id}-display`).innerText = saved;
+            });
+
+            // 2. メモの復元
+            document.getElementById('memo-area').value = localStorage.getItem('memo-text') || "";
+
+            // 3. 設定の復元
+            const savedSettings = localStorage.getItem('app-settings-final');
+            if (savedSettings) {
+                const s = JSON.parse(savedSettings);
+                // 入力欄に値を戻す
+                document.getElementById('input-title').value = s.title;
+                document.getElementById('input-label-p1').value = s.p1;
+                document.getElementById('input-label-p2').value = s.p2;
+                document.getElementById('input-label-p3').value = s.p3;
+                // 表示に反映
+                applySettingsToUI(s);
+            } else {
+                // 保存データがない場合はデフォルトを表示
+                document.getElementById('input-title').value = DEFAULTS.title;
+                document.getElementById('input-label-p1').value = DEFAULTS.p1;
+                document.getElementById('input-label-p2').value = DEFAULTS.p2;
+                document.getElementById('input-label-p3').value = DEFAULTS.p3;
+                applySettingsToUI(DEFAULTS);
+            }
+        };
+
+        // カウントボタン処理
+        function updateCount(id, delta) {
+            const display = document.getElementById(`${id}-display`);
+            let current = parseInt(display.innerText);
+            current = current + delta;
+            display.innerText = current;
+            localStorage.setItem(id, current);
+        }
+
+        // メモ保存
+        document.getElementById('memo-area').addEventListener('input', (e) => {
+            localStorage.setItem('memo-text', e.target.value);
+        });
+
+        // 設定保存（入力されるたびに実行）
+        function saveSettings() {
+            const s = {
+                title: document.getElementById('input-title').value,
+                p1: document.getElementById('input-label-p1').value,
+                p2: document.getElementById('input-label-p2').value,
+                p3: document.getElementById('input-label-p3').value
+            };
+            
+            applySettingsToUI(s);
+            localStorage.setItem('app-settings-final', JSON.stringify(s));
+        }
+
+        // 画面表示への反映
+        function applySettingsToUI(s) {
+            document.getElementById('main-title').innerText = s.title || "";
+            document.getElementById('page-title-tag').innerText = s.title || "";
+            document.getElementById('label-p1').innerText = s.p1 || "";
+            document.getElementById('label-p2').innerText = s.p2 || "";
+            document.getElementById('label-p3').innerText = s.p3 || "";
+        }
+
+        function resetCountsOnly() {
+            if(confirm('カウンターの数値をすべて0に戻しますか？')) {
+                ids.forEach(id => {
+                    localStorage.setItem(id, 0);
+                    document.getElementById(`${id}-display`).innerText = 0;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
